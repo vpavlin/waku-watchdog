@@ -16,4 +16,4 @@ jobs:
     - name: Run wakucanary
       id: wakucanary
       run: |
-        ./scritps/run.sh
+        ./scripts/run.sh
