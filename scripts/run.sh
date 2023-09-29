@@ -16,5 +16,5 @@ done
 git config --global user.name 'Waku Watchdog'
 git config --global user.email 'vpavlin@users.noreply.github.com'
 git add watched.csv
-git -m "watchdog run ${TIME}"
+git commit -m "watchdog run ${TIME}"
 git push
