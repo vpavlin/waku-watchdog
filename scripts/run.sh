@@ -1,6 +1,7 @@
 #!/bin/sh
 
 WAKUCANARY=./bin/wakucanary
+BRANCH=results
 
 check() {
     local node=$1
@@ -48,8 +49,8 @@ do
         #git config --global user.email 'vpavlin@users.noreply.github.com'
         git add watched.csv
         git commit -m "watchdog run ${TIME}"
-        git pull origin main --rebase
-        git push --set-upstream origin main
+        git pull origin ${BRANCH} --rebase
+        git push --set-upstream origin ${BRANCH}
         p=0
     fi
 
