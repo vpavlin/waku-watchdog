@@ -22,14 +22,12 @@ if [ -z ${GITHUB_TOKEN} ]; then
     sleep 120
 fi
 
-git remote remove origin
-git remote add origin https://vpavlin:${GITHUB_TOKEN}@github.com/vpavlin/waku-watchdog.git
+git remote set-url origin https://vpavlin:${GITHUB_TOKEN}@github.com/vpavlin/waku-watchdog.git
 
 p=0
 pids=""
 while true
 do
-    git pull
     TIME=$(date +%s)
     for node in `cat nodes.txt`; do
         check ${node} ${TIME} >> watched.csv &
@@ -44,13 +42,14 @@ do
             echo $pid
             wait ${pid}
         done
-        pid=""
+        pids=""
         echo "Pushing the updates..."
         #git config --global user.name 'Waku Watchdog'
         #git config --global user.email 'vpavlin@users.noreply.github.com'
         git add watched.csv
         git commit -m "watchdog run ${TIME}"
-        git push
+        git pull origin main --rebase
+        git push --set-upstream origin main
         p=0
     fi
 
