@@ -2,19 +2,49 @@
 
 WAKUCANARY=./bin/wakucanary
 
-TIME=$(date +%s)
-for node in `cat nodes.txt`; do
-    output=$(${WAKUCANARY} -a=${node} -p=relay)
+check() {
+    local node=$1
+    local TIME=$2
+    output=$(${WAKUCANARY} -a=${node} -p=relay -p=store)
     success=$([ $? -eq 0 ] && echo 1 || echo 0 )
     ping=$(echo ${output} | grep ping= | sed 's/.*ping=\([0-9]*\).*/\1/')
-    relay=$(echo ${output} | grep -q supported=/vac/waku/relay/2.0.0 && echo 1 || echo 0)
-    #echo ${node} ${TIME} ${success} ${ping}ms ${relay}
-    echo "${node};${TIME};${success};${ping};${relay};" >> watched.csv
-    echo '{"node":"'${node}'", "ping": '${ping:-0}', "relay": '${relay}', "timestamp": '${TIME}', "success": '${success}'}' #| json_pp
-done
+    relay=$(echo ${output} | grep -q "supported=/vac/waku/relay/2.0.0" && echo 1 || echo 0)
+    store=$(echo ${output} | grep -q "supported=/vac/waku/store/2.0.0-beta4" && echo 1 || echo 0)
 
-git config --global user.name 'Waku Watchdog'
-git config --global user.email 'vpavlin@users.noreply.github.com'
-git add watched.csv
-git commit -m "watchdog run ${TIME}"
-git push
+    #echo ${node} ${TIME} ${success} ${ping}ms ${relay}
+    echo '{"node":"'${node}'", "ping": '${ping:-0}', "relay": '${relay}', "store": '${store}', "timestamp": '${TIME}', "success": '${success}'}' 1>&2 #| json_pp
+
+    echo "${node};${TIME};${success};${ping};${relay};${store}"
+}
+
+p=0
+pids=""
+while true
+do
+    git pull
+    TIME=$(date +%s)
+    for node in `cat nodes.txt`; do
+        check ${node} ${TIME} >> watched.csv &
+        pids=${pids}" "$!
+        sleep 1
+    done
+
+    p=$(( p + 1 ))
+
+    if [ ${p} -eq 5 ]; then
+        for pid in `echo $pids`; do
+            echo $pid
+            wait ${pid}
+        done
+        pid=""
+        echo "Pushing the updates..."
+        git config --global user.name 'Waku Watchdog'
+        git config --global user.email 'vpavlin@users.noreply.github.com'
+        git add watched.csv
+        git commit -m "watchdog run ${TIME}"
+        git push
+        p=0
+    fi
+
+    sleep 1
+done
