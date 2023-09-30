@@ -17,6 +17,13 @@ check() {
     echo "${node};${TIME};${success};${ping};${relay};${store}"
 }
 
+if [ -z ${GITHUB_TOKEN} ]; then
+    echo "Failed to find GITHUB_TOKEN"
+    sleep 120
+fi
+
+git remote add origin https://vpavlin:${GITHUB_TOKEN}@github.com/vpavlin/waku-watchdog.git
+
 p=0
 pids=""
 while true
@@ -38,8 +45,8 @@ do
         done
         pid=""
         echo "Pushing the updates..."
-        git config --global user.name 'Waku Watchdog'
-        git config --global user.email 'vpavlin@users.noreply.github.com'
+        #git config --global user.name 'Waku Watchdog'
+        #git config --global user.email 'vpavlin@users.noreply.github.com'
         git add watched.csv
         git commit -m "watchdog run ${TIME}"
         git push
