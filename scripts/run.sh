@@ -22,6 +22,7 @@ if [ -z ${GITHUB_TOKEN} ]; then
     sleep 120
 fi
 
+git remote remove origin
 git remote add origin https://vpavlin:${GITHUB_TOKEN}@github.com/vpavlin/waku-watchdog.git
 
 p=0
