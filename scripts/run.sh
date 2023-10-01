@@ -30,6 +30,7 @@ p=0
 pids=""
 while true
 do
+    curl -O https://raw.githubusercontent.com/vpavlin/waku-watchdog/main/nodes.txt
     TIME=$(date +%s)
     for node in `cat nodes.txt`; do
         check ${node} ${TIME} >> watched.csv &

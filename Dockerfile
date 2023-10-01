@@ -12,4 +12,4 @@ RUN date > /opt/date &&\
 
 WORKDIR /opt/waku-watchdog
 
-ENTRYPOINT [ /opt/waku-watchdog/scripts/run.sh ]
+ENTRYPOINT [ "/opt/waku-watchdog/scripts/run.sh" ]
