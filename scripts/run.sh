@@ -25,6 +25,7 @@ fi
 
 git remote set-url origin https://vpavlin:${GITHUB_TOKEN}@github.com/vpavlin/waku-watchdog.git
 git checkout ${BRANCH}
+git pull origin ${BRANCH}
 
 p=0
 pids=""
