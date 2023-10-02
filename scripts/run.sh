@@ -31,9 +31,11 @@ mkdir -p nodes
 
 p=0
 pids=""
+
+curl -o nodes/nodes.txt -L https://raw.githubusercontent.com/vpavlin/waku-watchdog/main/nodes.txt 2> /dev/null
+echo "==> Starting the canary loop..."
 while true
 do
-    curl -o nodes/nodes.txt -L https://raw.githubusercontent.com/vpavlin/waku-watchdog/main/nodes.txt
     TIME=$(date +%s)
     for node in `cat nodes/nodes.txt`; do
         check ${node} ${TIME} >> watched.csv &
@@ -44,19 +46,19 @@ do
     p=$(( p + 1 ))
 
     if [ ${p} -eq 5 ]; then
+        echo "==> Waiting for canaries to finish"
         for pid in `echo $pids`; do
             echo $pid
             wait ${pid}
         done
         pids=""
-        echo "Pushing the updates..."
-        #git config --global user.name 'Waku Watchdog'
-        #git config --global user.email 'vpavlin@users.noreply.github.com'
+        echo "==> Pushing the updates..."
         git add watched.csv
         git commit -m "watchdog run ${TIME}"
         git pull origin ${BRANCH} --rebase
         git push --set-upstream origin ${BRANCH}
         p=0
+        curl -o nodes/nodes.txt -L https://raw.githubusercontent.com/vpavlin/waku-watchdog/main/nodes.txt 2> /dev/null
     fi
 
     sleep 1
