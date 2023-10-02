@@ -2,6 +2,8 @@
 
 WAKUCANARY=./bin/wakucanary
 BRANCH=results
+SLEEP=${WATCHDOG_SLEEP:-1}
+UPLOAD_AFTER=${WATCHDOG_UPLOAD_AFTER:-5}
 
 check() {
     local node=$1
@@ -45,7 +47,7 @@ do
 
     p=$(( p + 1 ))
 
-    if [ ${p} -eq 5 ]; then
+    if [ ${p} -eq ${UPLOAD_AFTER} ]; then
         echo "==> Waiting for canaries to finish"
         for pid in `echo $pids`; do
             wait ${pid}
@@ -60,5 +62,5 @@ do
         curl -o nodes/nodes.txt -L https://raw.githubusercontent.com/vpavlin/waku-watchdog/main/nodes.txt 2> /dev/null
     fi
 
-    sleep 1
+    sleep ${SLEEP}
 done
