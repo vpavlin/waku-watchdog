@@ -48,15 +48,14 @@ do
     if [ ${p} -eq 5 ]; then
         echo "==> Waiting for canaries to finish"
         for pid in `echo $pids`; do
-            echo $pid
             wait ${pid}
         done
         pids=""
         echo "==> Pushing the updates..."
         git add watched.csv
         git commit -m "watchdog run ${TIME}"
-        git pull origin ${BRANCH} --rebase
-        git push --set-upstream origin ${BRANCH}
+        git pull --rebase #origin ${BRANCH}
+        git push #--set-upstream origin ${BRANCH}
         p=0
         curl -o nodes/nodes.txt -L https://raw.githubusercontent.com/vpavlin/waku-watchdog/main/nodes.txt 2> /dev/null
     fi
