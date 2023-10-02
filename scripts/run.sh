@@ -27,11 +27,13 @@ git remote set-url origin https://vpavlin:${GITHUB_TOKEN}@github.com/vpavlin/wak
 git checkout ${BRANCH}
 git pull origin ${BRANCH}
 
+mkdir -p nodes
+
 p=0
 pids=""
 while true
 do
-    curl -o nodes/nodes.txt https://raw.githubusercontent.com/vpavlin/waku-watchdog/main/nodes.txt
+    curl -o nodes/nodes.txt -L https://raw.githubusercontent.com/vpavlin/waku-watchdog/main/nodes.txt
     TIME=$(date +%s)
     for node in `cat nodes/nodes.txt`; do
         check ${node} ${TIME} >> watched.csv &
