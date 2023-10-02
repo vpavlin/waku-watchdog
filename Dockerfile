@@ -7,8 +7,9 @@ RUN dnf -y install git
 RUN  git config --global user.name 'Waku Watchdog' &&\
      git config --global user.email 'vpavlin@users.noreply.github.com'
 
-RUN date > /opt/date &&\
-    git clone https://github.com/vpavlin/waku-watchdog.git
+ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
+
+RUN git clone https://github.com/vpavlin/waku-watchdog.git
 
 WORKDIR /opt/waku-watchdog
 
