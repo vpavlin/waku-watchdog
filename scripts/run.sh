@@ -40,8 +40,9 @@ while true
 do
     TIME=$(date +%s)
     SUFFIX=$(( ${TIME} - (${TIME} % 3600) ))
+    RESULTS=watched-${SUFFIX}.csv
     for node in `cat nodes/nodes.txt`; do
-        check ${node} ${TIME} >> watched-${SUFFIX}.csv &
+        check ${node} ${TIME} >> ${RESULTS} &
         pids=${pids}" "$!
         sleep 1
     done
@@ -55,7 +56,7 @@ do
         done
         pids=""
         echo "==> Pushing the updates..."
-        git add watched.csv
+        git add ${RESULTS}
         git commit -m "watchdog run ${TIME}"
         git pull --rebase #origin ${BRANCH}
         git push #--set-upstream origin ${BRANCH}
