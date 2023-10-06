@@ -39,8 +39,9 @@ echo "==> Starting the canary loop..."
 while true
 do
     TIME=$(date +%s)
+    SUFFIX=$(( ${TIME} - (${TIME} % 3600) ))
     for node in `cat nodes/nodes.txt`; do
-        check ${node} ${TIME} >> watched.csv &
+        check ${node} ${TIME} >> watched-${SUFFIX}.csv &
         pids=${pids}" "$!
         sleep 1
     done
