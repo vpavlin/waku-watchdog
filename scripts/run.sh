@@ -1,6 +1,7 @@
 #!/bin/sh
 
 WAKUCANARY=./bin/wakucanary
+RESULTS_PREFIX="watched"
 BRANCH=results
 SLEEP=${WATCHDOG_SLEEP:-1}
 UPLOAD_AFTER=${WATCHDOG_UPLOAD_AFTER:-5}
@@ -40,7 +41,7 @@ while true
 do
     TIME=$(date +%s)
     SUFFIX=$(( ${TIME} - (${TIME} % 3600) ))
-    RESULTS=watched-${SUFFIX}.csv
+    RESULTS=${RESULTS_PREFIX}-${SUFFIX}.csv
     for node in `cat nodes/nodes.txt`; do
         check ${node} ${TIME} >> ${RESULTS} &
         pids=${pids}" "$!
@@ -56,7 +57,7 @@ do
         done
         pids=""
         echo "==> Pushing the updates..."
-        git add ${RESULTS}
+        git add ${RESULTS_PREFIX}*
         git commit -m "watchdog run ${TIME}"
         git pull --rebase #origin ${BRANCH}
         git push #--set-upstream origin ${BRANCH}
